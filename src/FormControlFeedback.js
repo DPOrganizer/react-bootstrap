@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 
 import Glyphicon from './Glyphicon';
 import { bsClass, getClassSet, splitBsProps } from './utils/bootstrapUtils';
+import { withFormGroupContext } from './utils/Contexts';
 
 const defaultProps = {
   bsRole: 'feedback'
 };
 
-const contextTypes = {
+const propTypes = {
   $bs_formGroup: PropTypes.object
 };
 
@@ -43,14 +44,14 @@ class FormControlFeedback extends React.Component {
   }
 
   render() {
-    const { className, children, ...props } = this.props;
+    const { className, children, $bs_formGroup, ...props } = this.props;
     const [bsProps, elementProps] = splitBsProps(props);
 
     const classes = getClassSet(bsProps);
 
     if (!children) {
       return this.renderDefaultFeedback(
-        this.context.$bs_formGroup,
+        $bs_formGroup,
         className,
         classes,
         elementProps
@@ -65,7 +66,7 @@ class FormControlFeedback extends React.Component {
   }
 }
 
+FormControlFeedback.propTypes = propTypes;
 FormControlFeedback.defaultProps = defaultProps;
-FormControlFeedback.contextTypes = contextTypes;
 
-export default bsClass('form-control-feedback', FormControlFeedback);
+export default withFormGroupContext(bsClass('form-control-feedback', FormControlFeedback));

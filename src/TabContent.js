@@ -8,6 +8,7 @@ import {
   prefix,
   splitBsPropsAndOmit
 } from './utils/bootstrapUtils';
+import { withTabContainerContext, TabContentContext } from './utils/Contexts';
 
 const propTypes = {
   componentClass: elementType,
@@ -27,7 +28,11 @@ const propTypes = {
   /**
    * Unmount tabs (remove it from the DOM) when they are no longer visible
    */
-  unmountOnExit: PropTypes.bool
+  unmountOnExit: PropTypes.bool,
+
+  $bs_tabContainer: PropTypes.shape({
+    activeKey: PropTypes.any
+  })
 };
 
 const defaultProps = {
@@ -35,25 +40,6 @@ const defaultProps = {
   animation: true,
   mountOnEnter: false,
   unmountOnExit: false
-};
-
-const contextTypes = {
-  $bs_tabContainer: PropTypes.shape({
-    activeKey: PropTypes.any
-  })
-};
-
-const childContextTypes = {
-  $bs_tabContent: PropTypes.shape({
-    bsClass: PropTypes.string,
-    animation: PropTypes.oneOfType([PropTypes.bool, elementType]),
-    activeKey: PropTypes.any,
-    mountOnEnter: PropTypes.bool,
-    unmountOnExit: PropTypes.bool,
-    onPaneEnter: PropTypes.func.isRequired,
-    onPaneExited: PropTypes.func.isRequired,
-    exiting: PropTypes.bool.isRequired
-  })
 };
 
 class TabContent extends React.Component {
@@ -72,7 +58,17 @@ class TabContent extends React.Component {
     };
   }
 
-  getChildContext() {
+  UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line
+    if (!nextProps.animation && this.state.activeChild) {
+      this.setState({ activeKey: null, activeChild: null });
+    }
+  }
+
+  componentWillUnmount() {
+    this.isUnmounted = true;
+  }
+
+  getTabContentContext() {
     const { bsClass, animation, mountOnEnter, unmountOnExit } = this.props;
 
     const stateActiveKey = this.state.activeKey;
@@ -84,31 +80,19 @@ class TabContent extends React.Component {
       stateActiveKey != null && stateActiveKey !== containerActiveKey;
 
     return {
-      $bs_tabContent: {
-        bsClass,
-        animation,
-        activeKey,
-        mountOnEnter,
-        unmountOnExit,
-        onPaneEnter: this.handlePaneEnter,
-        onPaneExited: this.handlePaneExited,
-        exiting
-      }
+      bsClass,
+      animation,
+      activeKey,
+      mountOnEnter,
+      unmountOnExit,
+      onPaneEnter: this.handlePaneEnter,
+      onPaneExited: this.handlePaneExited,
+      exiting
     };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line
-    if (!nextProps.animation && this.state.activeChild) {
-      this.setState({ activeKey: null, activeChild: null });
-    }
-  }
-
-  componentWillUnmount() {
-    this.isUnmounted = true;
-  }
-
   getContainerActiveKey() {
-    const tabContainer = this.context.$bs_tabContainer;
+    const tabContainer = this.props.$bs_tabContainer;
     return tabContainer && tabContainer.activeKey;
   }
 
@@ -151,23 +135,24 @@ class TabContent extends React.Component {
   render() {
     const { componentClass: Component, className, ...props } = this.props;
     const [bsProps, elementProps] = splitBsPropsAndOmit(props, [
+      '$bs_tabContainer',
       'animation',
       'mountOnEnter',
       'unmountOnExit'
     ]);
 
     return (
-      <Component
-        {...elementProps}
-        className={classNames(className, prefix(bsProps, 'content'))}
-      />
+      <TabContentContext.Provider value={this.getTabContentContext()}>
+        <Component
+          {...elementProps}
+          className={classNames(className, prefix(bsProps, 'content'))}
+        />
+      </TabContentContext.Provider>
     );
   }
 }
 
 TabContent.propTypes = propTypes;
 TabContent.defaultProps = defaultProps;
-TabContent.contextTypes = contextTypes;
-TabContent.childContextTypes = childContextTypes;
 
-export default setBsClass('tab', TabContent);
+export default withTabContainerContext(setBsClass('tab', TabContent));

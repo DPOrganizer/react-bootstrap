@@ -5,6 +5,7 @@ import elementType from 'react-prop-types/lib/elementType';
 
 import { prefix, splitBsProps, bsClass } from './utils/bootstrapUtils';
 import PanelToggle from './PanelToggle';
+import { withPanelContext } from './utils/Contexts';
 
 const propTypes = {
   componentClass: elementType,
@@ -12,10 +13,8 @@ const propTypes = {
    * A convenience prop that renders the Panel.Title as a panel collapse toggle component
    * for the common use-case.
    */
-  toggle: PropTypes.bool
-};
+  toggle: PropTypes.bool,
 
-const contextTypes = {
   $bs_panel: PropTypes.shape({
     bsClass: PropTypes.string
   })
@@ -32,10 +31,11 @@ class PanelTitle extends React.Component {
       className,
       toggle,
       componentClass: Component,
+      $bs_panel,
       ...props
     } = this.props;
 
-    const { bsClass: _bsClass } = this.context.$bs_panel || {};
+    const { bsClass: _bsClass } = $bs_panel || {};
 
     const [bsProps, elementProps] = splitBsProps(props);
     bsProps.bsClass = _bsClass || bsProps.bsClass;
@@ -57,6 +57,5 @@ class PanelTitle extends React.Component {
 
 PanelTitle.propTypes = propTypes;
 PanelTitle.defaultProps = defaultProps;
-PanelTitle.contextTypes = contextTypes;
 
-export default bsClass('panel', PanelTitle);
+export default withPanelContext(bsClass('panel', PanelTitle));

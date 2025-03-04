@@ -4,6 +4,7 @@ import React from 'react';
 
 import { bsClass, getClassSet, splitBsProps } from './utils/bootstrapUtils';
 import createChainedFunction from './utils/createChainedFunction';
+import { withModalContext } from './utils/Contexts';
 import CloseButton from './CloseButton';
 
 // TODO: `aria-label` should be `closeLabel`.
@@ -26,18 +27,16 @@ const propTypes = {
    * a Modal component, the onHide will automatically be propagated up to the
    * parent Modal `onHide`.
    */
-  onHide: PropTypes.func
+  onHide: PropTypes.func,
+
+  $bs_modal: PropTypes.shape({
+    onHide: PropTypes.func
+  })
 };
 
 const defaultProps = {
   closeLabel: 'Close',
   closeButton: false
-};
-
-const contextTypes = {
-  $bs_modal: PropTypes.shape({
-    onHide: PropTypes.func
-  })
 };
 
 class ModalHeader extends React.Component {
@@ -48,10 +47,9 @@ class ModalHeader extends React.Component {
       onHide,
       className,
       children,
+      $bs_modal,
       ...props
     } = this.props;
-
-    const modal = this.context.$bs_modal;
 
     const [bsProps, elementProps] = splitBsProps(props);
 
@@ -62,7 +60,7 @@ class ModalHeader extends React.Component {
         {closeButton && (
           <CloseButton
             label={closeLabel}
-            onClick={createChainedFunction(modal && modal.onHide, onHide)}
+            onClick={createChainedFunction($bs_modal && $bs_modal.onHide, onHide)}
           />
         )}
 
@@ -74,6 +72,5 @@ class ModalHeader extends React.Component {
 
 ModalHeader.propTypes = propTypes;
 ModalHeader.defaultProps = defaultProps;
-ModalHeader.contextTypes = contextTypes;
 
-export default bsClass('modal-header', ModalHeader);
+export default withModalContext(bsClass('modal-header', ModalHeader));

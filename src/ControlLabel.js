@@ -4,29 +4,28 @@ import PropTypes from 'prop-types';
 import warning from 'warning';
 
 import { bsClass, getClassSet, splitBsProps } from './utils/bootstrapUtils';
+import { withFormGroupContext } from './utils/Contexts';
 
 const propTypes = {
   /**
    * Uses `controlId` from `<FormGroup>` if not explicitly specified.
    */
   htmlFor: PropTypes.string,
-  srOnly: PropTypes.bool
+  srOnly: PropTypes.bool,
+
+  $bs_formGroup: PropTypes.object
 };
 
 const defaultProps = {
   srOnly: false
 };
 
-const contextTypes = {
-  $bs_formGroup: PropTypes.object
-};
-
 class ControlLabel extends React.Component {
   render() {
-    const formGroup = this.context.$bs_formGroup;
+    const formGroup = this.props.$bs_formGroup;
     const controlId = formGroup && formGroup.controlId;
 
-    const { htmlFor = controlId, srOnly, className, ...props } = this.props;
+    const { htmlFor = controlId, srOnly, className, $bs_formGroup, ...props } = this.props;
     const [bsProps, elementProps] = splitBsProps(props);
 
     warning(
@@ -51,6 +50,5 @@ class ControlLabel extends React.Component {
 
 ControlLabel.propTypes = propTypes;
 ControlLabel.defaultProps = defaultProps;
-ControlLabel.contextTypes = contextTypes;
 
-export default bsClass('control-label', ControlLabel);
+export default withFormGroupContext(bsClass('control-label', ControlLabel));

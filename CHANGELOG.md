@@ -1,3 +1,9 @@
+## [Unreleased]
+
+- **chore:** Switch to new context API (React 18)
+
+---
+
 ## [v0.32.5]
 - **Chore:** Upgrade dependencies ([#3974])
 

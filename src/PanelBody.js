@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import cn from 'classnames';
+
 import { prefix, splitBsPropsAndOmit, bsClass } from './utils/bootstrapUtils';
+import { withPanelContext } from './utils/Contexts';
 import PanelCollapse from './PanelCollapse';
 
 const propTypes = {
@@ -16,25 +18,24 @@ const propTypes = {
    * </Panel.Collapse>
    * ```
    */
-  collapsible: PropTypes.bool.isRequired
+  collapsible: PropTypes.bool.isRequired,
+
+  $bs_panel: PropTypes.shape({
+    bsClass: PropTypes.string
+  })
 };
 
 const defaultProps = {
   collapsible: false
 };
 
-const contextTypes = {
-  $bs_panel: PropTypes.shape({
-    bsClass: PropTypes.string
-  })
-};
-
 class PanelBody extends React.Component {
   render() {
     const { children, className, collapsible } = this.props;
-    const { bsClass: _bsClass } = this.context.$bs_panel || {};
+    const { bsClass: _bsClass } = this.props.$bs_panel || {};
 
     const [bsProps, elementProps] = splitBsPropsAndOmit(this.props, [
+      '$bs_panel',
       'collapsible'
     ]);
     bsProps.bsClass = _bsClass || bsProps.bsClass;
@@ -55,6 +56,5 @@ class PanelBody extends React.Component {
 
 PanelBody.propTypes = propTypes;
 PanelBody.defaultProps = defaultProps;
-PanelBody.contextTypes = contextTypes;
 
-export default bsClass('panel', PanelBody);
+export default withPanelContext(bsClass('panel', PanelBody));

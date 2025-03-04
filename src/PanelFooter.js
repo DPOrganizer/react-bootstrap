@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import cn from 'classnames';
-import { prefix, bsClass, splitBsProps } from './utils/bootstrapUtils';
+import { prefix, bsClass, splitBsPropsAndOmit } from './utils/bootstrapUtils';
+import { withPanelContext } from './utils/Contexts';
 
-const contextTypes = {
+const propTypes = {
   $bs_panel: PropTypes.shape({
     bsClass: PropTypes.string
   })
@@ -12,9 +13,9 @@ const contextTypes = {
 class PanelFooter extends React.Component {
   render() {
     let { children, className } = this.props;
-    let { bsClass: _bsClass } = this.context.$bs_panel || {};
+    let { bsClass: _bsClass } = this.props.$bs_panel || {};
 
-    const [bsProps, elementProps] = splitBsProps(this.props);
+    const [bsProps, elementProps] = splitBsPropsAndOmit(this.props, ['$bs_panel']);
     bsProps.bsClass = _bsClass || bsProps.bsClass;
 
     return (
@@ -28,6 +29,6 @@ class PanelFooter extends React.Component {
   }
 }
 
-PanelFooter.contextTypes = contextTypes;
+PanelFooter.propTypes = propTypes;
 
-export default bsClass('panel', PanelFooter);
+export default withPanelContext(bsClass('panel', PanelFooter));

@@ -17,6 +17,7 @@ import Title from './PanelTitle';
 import Footer from './PanelFooter';
 import Toggle from './PanelToggle';
 import Collapse from './PanelCollapse';
+import { withPanelGroupContext, PanelContext } from './utils/Contexts';
 
 const has = Object.prototype.hasOwnProperty;
 
@@ -42,10 +43,8 @@ const propTypes = {
   /**
    * An HTML `id` attribute uniquely identifying the Panel component.
    */
-  id: PropTypes.string
-};
+  id: PropTypes.string,
 
-const contextTypes = {
   $bs_panelGroup: PropTypes.shape({
     getId: PropTypes.func,
     activeKey: PropTypes.any,
@@ -53,25 +52,15 @@ const contextTypes = {
   })
 };
 
-const childContextTypes = {
-  $bs_panel: PropTypes.shape({
-    headingId: PropTypes.string,
-    bodyId: PropTypes.string,
-    bsClass: PropTypes.string,
-    onToggle: PropTypes.func,
-    expanded: PropTypes.bool
-  })
-};
-
 class Panel extends React.Component {
-  getChildContext() {
+  getPanelContext() {
     const { eventKey, id } = this.props;
     const idKey = eventKey == null ? id : eventKey;
 
     let ids;
 
     if (idKey !== null) {
-      const panelGroup = this.context.$bs_panelGroup;
+      const panelGroup = this.props.$bs_panelGroup;
       const getId = (panelGroup && panelGroup.getId) || defaultGetId;
 
       ids = {
@@ -81,24 +70,22 @@ class Panel extends React.Component {
     }
 
     return {
-      $bs_panel: {
-        ...ids,
-        bsClass: this.props.bsClass,
-        expanded: this.getExpanded(),
-        onToggle: this.handleToggle
-      }
+      ...ids,
+      bsClass: this.props.bsClass,
+      expanded: this.getExpanded(),
+      onToggle: this.handleToggle
     };
   }
 
   getExpanded() {
-    const panelGroup = this.context.$bs_panelGroup;
+    const panelGroup = this.props.$bs_panelGroup;
 
     if (panelGroup && has.call(panelGroup, 'activeKey')) {
       warning(
         this.props.expanded == null,
         'Specifying `<Panel>` `expanded` in the context of an accordion ' +
-          '`<PanelGroup>` is not supported. Set `activeKey` on the ' +
-          '`<PanelGroup>` instead.'
+        '`<PanelGroup>` is not supported. Set `activeKey` on the ' +
+        '`<PanelGroup>` instead.'
       );
 
       return panelGroup.activeKey === this.props.eventKey;
@@ -108,7 +95,7 @@ class Panel extends React.Component {
   }
 
   handleToggle = e => {
-    const panelGroup = this.context.$bs_panelGroup;
+    const panelGroup = this.props.$bs_panelGroup;
     const expanded = !this.getExpanded();
 
     if (panelGroup && panelGroup.onToggle) {
@@ -121,25 +108,25 @@ class Panel extends React.Component {
   render() {
     let { className, children } = this.props;
     const [bsProps, props] = splitBsPropsAndOmit(this.props, [
+      '$bs_panelGroup',
       'onToggle',
       'eventKey',
       'expanded'
     ]);
 
     return (
-      <div {...props} className={classNames(className, getClassSet(bsProps))}>
-        {children}
-      </div>
+      <PanelContext.Provider value={this.getPanelContext()}>
+        <div {...props} className={classNames(className, getClassSet(bsProps))}>
+          {children}
+        </div>
+      </PanelContext.Provider>
     );
   }
 }
 
 Panel.propTypes = propTypes;
 
-Panel.contextTypes = contextTypes;
-Panel.childContextTypes = childContextTypes;
-
-const UncontrolledPanel = uncontrollable(
+const UncontrolledPanel = withPanelGroupContext(uncontrollable(
   bsClass(
     'panel',
     bsStyles(
@@ -149,7 +136,7 @@ const UncontrolledPanel = uncontrollable(
     )
   ),
   { expanded: 'onToggle' }
-);
+));
 
 Object.assign(UncontrolledPanel, {
   Heading,

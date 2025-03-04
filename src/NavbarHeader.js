@@ -3,8 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { prefix } from './utils/bootstrapUtils';
+import { withNavBarContext } from './utils/Contexts';
 
-const contextTypes = {
+const propTypes = {
   $bs_navbar: PropTypes.shape({
     bsClass: PropTypes.string
   })
@@ -12,8 +13,8 @@ const contextTypes = {
 
 class NavbarHeader extends React.Component {
   render() {
-    const { className, ...props } = this.props;
-    const navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+    const { className, $bs_navbar, ...props } = this.props;
+    const navbarProps = $bs_navbar || { bsClass: 'navbar' };
 
     const bsClassName = prefix(navbarProps, 'header');
 
@@ -21,6 +22,6 @@ class NavbarHeader extends React.Component {
   }
 }
 
-NavbarHeader.contextTypes = contextTypes;
+NavbarHeader.propTypes = propTypes;
 
-export default NavbarHeader;
+export default withNavBarContext(NavbarHeader);

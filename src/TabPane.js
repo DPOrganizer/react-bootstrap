@@ -11,6 +11,11 @@ import {
   splitBsPropsAndOmit
 } from './utils/bootstrapUtils';
 import createChainedFunction from './utils/createChainedFunction';
+import {
+  withTabContainerContext,
+  withTabContentContext,
+  TabContentContext
+} from './utils/Contexts';
 
 import Fade from './Fade';
 
@@ -78,10 +83,8 @@ const propTypes = {
   /**
    * Unmount the tab (remove it from the DOM) when it is no longer visible
    */
-  unmountOnExit: PropTypes.bool
-};
+  unmountOnExit: PropTypes.bool,
 
-const contextTypes = {
   $bs_tabContainer: PropTypes.shape({
     getTabId: PropTypes.func,
     getPaneId: PropTypes.func
@@ -98,14 +101,6 @@ const contextTypes = {
   })
 };
 
-/**
- * We override the `<TabContainer>` context so `<Nav>`s in `<TabPane>`s don't
- * conflict with the top level one.
- */
-const childContextTypes = {
-  $bs_tabContainer: PropTypes.oneOf([null])
-};
-
 class TabPane extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -114,12 +109,6 @@ class TabPane extends React.Component {
     this.handleExited = this.handleExited.bind(this);
 
     this.in = false;
-  }
-
-  getChildContext() {
-    return {
-      $bs_tabContainer: null
-    };
   }
 
   componentDidMount() {
@@ -153,12 +142,12 @@ class TabPane extends React.Component {
       return this.props.animation;
     }
 
-    const tabContent = this.context.$bs_tabContent;
+    const tabContent = this.props.$bs_tabContent;
     return tabContent && tabContent.animation;
   }
 
   handleEnter() {
-    const tabContent = this.context.$bs_tabContent;
+    const tabContent = this.props.$bs_tabContent;
     if (!tabContent) {
       return;
     }
@@ -167,7 +156,7 @@ class TabPane extends React.Component {
   }
 
   handleExited() {
-    const tabContent = this.context.$bs_tabContent;
+    const tabContent = this.props.$bs_tabContent;
     if (!tabContent) {
       return;
     }
@@ -177,7 +166,7 @@ class TabPane extends React.Component {
   }
 
   isActive() {
-    const tabContent = this.context.$bs_tabContent;
+    const tabContent = this.props.$bs_tabContent;
     const activeKey = tabContent && tabContent.activeKey;
 
     return this.props.eventKey === activeKey;
@@ -199,13 +188,10 @@ class TabPane extends React.Component {
       onExited,
       mountOnEnter: propsMountOnEnter,
       unmountOnExit: propsUnmountOnExit,
+      $bs_tabContent: tabContent,
+      $bs_tabContainer: tabContainer,
       ...props
     } = this.props;
-
-    const {
-      $bs_tabContent: tabContent,
-      $bs_tabContainer: tabContainer
-    } = this.context;
 
     const [bsProps, elementProps] = splitBsPropsAndOmit(props, ['animation']);
 
@@ -240,10 +226,10 @@ class TabPane extends React.Component {
       warning(
         !elementProps.id && !elementProps['aria-labelledby'],
         'In the context of a `<TabContainer>`, `<TabPanes>` are given ' +
-          'generated `id` and `aria-labelledby` attributes for the sake of ' +
-          'proper component accessibility. Any provided ones will be ignored. ' +
-          'To control these attributes directly provide a `generateChildId` ' +
-          'prop to the parent `<TabContainer>`.'
+        'generated `id` and `aria-labelledby` attributes for the sake of ' +
+        'proper component accessibility. Any provided ones will be ignored. ' +
+        'To control these attributes directly provide a `generateChildId` ' +
+        'prop to the parent `<TabContainer>`.'
       );
 
       elementProps.id = tabContainer.getPaneId(eventKey);
@@ -251,12 +237,18 @@ class TabPane extends React.Component {
     }
 
     const pane = (
-      <div
-        {...elementProps}
-        role="tabpanel"
-        aria-hidden={!active}
-        className={classNames(className, classes)}
-      />
+      /**
+       * We override the `<TabContainer>` context so `<Nav>`s in `<TabPane>`s don't
+       * conflict with the top level one.
+       */
+      <TabContentContext.Provider value={null}>
+        <div
+          {...elementProps}
+          role="tabpanel"
+          aria-hidden={!active}
+          className={classNames(className, classes)}
+        />
+      </TabContentContext.Provider>
     );
 
     if (Transition) {
@@ -284,7 +276,9 @@ class TabPane extends React.Component {
 }
 
 TabPane.propTypes = propTypes;
-TabPane.contextTypes = contextTypes;
-TabPane.childContextTypes = childContextTypes;
 
-export default bsClass('tab-pane', TabPane);
+export default withTabContainerContext(
+  withTabContentContext(
+    bsClass('tab-pane', TabPane)
+  )
+);

@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { uncontrollable } from 'uncontrollable';
 
+import { TabContainerContext } from './utils/Contexts';
+
 const TAB = 'tab';
 const PANE = 'pane';
 
@@ -21,8 +23,8 @@ const propTypes = {
       if (!error && !props.id) {
         error = new Error(
           'In order to properly initialize Tabs in a way that is accessible ' +
-            'to assistive technologies (such as screen readers) an `id` or a ' +
-            '`generateChildId` prop to TabContainer is required'
+          'to assistive technologies (such as screen readers) an `id` or a ' +
+          '`generateChildId` prop to TabContainer is required'
         );
       }
     }
@@ -58,29 +60,18 @@ const propTypes = {
   activeKey: PropTypes.any
 };
 
-const childContextTypes = {
-  $bs_tabContainer: PropTypes.shape({
-    activeKey: PropTypes.any,
-    onSelect: PropTypes.func.isRequired,
-    getTabId: PropTypes.func.isRequired,
-    getPaneId: PropTypes.func.isRequired
-  })
-};
-
 class TabContainer extends React.Component {
-  getChildContext() {
+  getTabContainerContext() {
     const { activeKey, onSelect, generateChildId, id } = this.props;
 
     const getId =
       generateChildId || ((key, type) => (id ? `${id}-${type}-${key}` : null));
 
     return {
-      $bs_tabContainer: {
-        activeKey,
-        onSelect,
-        getTabId: key => getId(key, TAB),
-        getPaneId: key => getId(key, PANE)
-      }
+      activeKey,
+      onSelect,
+      getTabId: key => getId(key, TAB),
+      getPaneId: key => getId(key, PANE)
     };
   }
 
@@ -91,11 +82,15 @@ class TabContainer extends React.Component {
     delete props.onSelect;
     delete props.activeKey;
 
-    return React.cloneElement(React.Children.only(children), props);
+    const element = React.Children.only(children);
+    return (
+      <TabContainerContext.Provider value={this.getTabContainerContext()}>
+        {element}
+      </TabContainerContext.Provider>
+    );
   }
 }
 
 TabContainer.propTypes = propTypes;
-TabContainer.childContextTypes = childContextTypes;
 
 export default uncontrollable(TabContainer, { activeKey: 'onSelect' });

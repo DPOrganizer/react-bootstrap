@@ -21,6 +21,7 @@ import {
 } from './utils/bootstrapUtils';
 import { Style } from './utils/StyleConfig';
 import createChainedFunction from './utils/createChainedFunction';
+import { NavBarContext, withNavBarContext } from './utils/Contexts';
 
 const propTypes = {
   /**
@@ -109,15 +110,6 @@ const defaultProps = {
   collapseOnSelect: false
 };
 
-const childContextTypes = {
-  $bs_navbar: PropTypes.shape({
-    bsClass: PropTypes.string,
-    expanded: PropTypes.bool,
-    onToggle: PropTypes.func.isRequired,
-    onSelect: PropTypes.func
-  })
-};
-
 class Navbar extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -126,19 +118,17 @@ class Navbar extends React.Component {
     this.handleCollapse = this.handleCollapse.bind(this);
   }
 
-  getChildContext() {
+  getNavBarContext() {
     const { bsClass, expanded, onSelect, collapseOnSelect } = this.props;
 
     return {
-      $bs_navbar: {
-        bsClass,
-        expanded,
-        onToggle: this.handleToggle,
-        onSelect: createChainedFunction(
-          onSelect,
-          collapseOnSelect ? this.handleCollapse : null
-        )
-      }
+      bsClass,
+      expanded,
+      onToggle: this.handleToggle,
+      onSelect: createChainedFunction(
+        onSelect,
+        collapseOnSelect ? this.handleCollapse : null
+      )
     };
   }
 
@@ -195,16 +185,17 @@ class Navbar extends React.Component {
     };
 
     return (
-      <Component {...elementProps} className={classNames(className, classes)}>
-        <Grid fluid={fluid}>{children}</Grid>
-      </Component>
+      <NavBarContext.Provider value={this.getNavBarContext()}>
+        <Component {...elementProps} className={classNames(className, classes)}>
+          <Grid fluid={fluid}>{children}</Grid>
+        </Component>
+      </NavBarContext.Provider>
     );
   }
 }
 
 Navbar.propTypes = propTypes;
 Navbar.defaultProps = defaultProps;
-Navbar.childContextTypes = childContextTypes;
 
 setBsClass('navbar', Navbar);
 
@@ -212,16 +203,15 @@ const UncontrollableNavbar = uncontrollable(Navbar, { expanded: 'onToggle' });
 
 function createSimpleWrapper(tag, suffix, displayName) {
   const Wrapper = (
-    { componentClass: Component, className, pullRight, pullLeft, ...props },
-    { $bs_navbar: navbarProps = { bsClass: 'navbar' } }
+    { componentClass: Component, className, pullRight, pullLeft, $bs_navbar: navbarProps, ...props }
   ) => (
     <Component
       {...props}
       className={classNames(
         className,
-        prefix(navbarProps, suffix),
-        pullRight && prefix(navbarProps, 'right'),
-        pullLeft && prefix(navbarProps, 'left')
+        prefix(navbarProps || { bsClass: 'navbar' }, suffix),
+        pullRight && prefix(navbarProps || { bsClass: 'navbar' }, 'right'),
+        pullLeft && prefix(navbarProps || { bsClass: 'navbar' }, 'left')
       )}
     />
   );
@@ -231,19 +221,16 @@ function createSimpleWrapper(tag, suffix, displayName) {
   Wrapper.propTypes = {
     componentClass: elementType,
     pullRight: PropTypes.bool,
-    pullLeft: PropTypes.bool
+    pullLeft: PropTypes.bool,
+    $bs_navbar: PropTypes.shape({
+      bsClass: PropTypes.string
+    })
   };
 
   Wrapper.defaultProps = {
     componentClass: tag,
     pullRight: false,
     pullLeft: false
-  };
-
-  Wrapper.contextTypes = {
-    $bs_navbar: PropTypes.shape({
-      bsClass: PropTypes.string
-    })
   };
 
   return Wrapper;
@@ -254,9 +241,9 @@ UncontrollableNavbar.Header = NavbarHeader;
 UncontrollableNavbar.Toggle = NavbarToggle;
 UncontrollableNavbar.Collapse = NavbarCollapse;
 
-UncontrollableNavbar.Form = createSimpleWrapper('div', 'form', 'NavbarForm');
-UncontrollableNavbar.Text = createSimpleWrapper('p', 'text', 'NavbarText');
-UncontrollableNavbar.Link = createSimpleWrapper('a', 'link', 'NavbarLink');
+UncontrollableNavbar.Form = withNavBarContext(createSimpleWrapper('div', 'form', 'NavbarForm'));
+UncontrollableNavbar.Text = withNavBarContext(createSimpleWrapper('p', 'text', 'NavbarText'));
+UncontrollableNavbar.Link = withNavBarContext(createSimpleWrapper('a', 'link', 'NavbarLink'));
 
 // Set bsStyles here so they can be overridden.
 export default bsStyles([Style.DEFAULT, Style.INVERSE], Style.DEFAULT)(

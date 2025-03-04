@@ -15,6 +15,7 @@ import {
 } from './utils/bootstrapUtils';
 import createChainedFunction from './utils/createChainedFunction';
 import ValidComponentChildren from './utils/ValidComponentChildren';
+import { withNavBarContext, withTabContainerContext } from './utils/Contexts';
 
 // TODO: Should we expose `<NavItem>` as `<Nav.Item>`?
 
@@ -86,17 +87,8 @@ const propTypes = {
    * Float the Nav to the left. When `navbar` is `true` the appropriate
    * contextual classes are added as well.
    */
-  pullLeft: PropTypes.bool
-};
+  pullLeft: PropTypes.bool,
 
-const defaultProps = {
-  justified: false,
-  pullRight: false,
-  pullLeft: false,
-  stacked: false
-};
-
-const contextTypes = {
   $bs_navbar: PropTypes.shape({
     bsClass: PropTypes.string,
     onSelect: PropTypes.func
@@ -108,6 +100,13 @@ const contextTypes = {
     getTabId: PropTypes.func.isRequired,
     getPaneId: PropTypes.func.isRequired
   })
+};
+
+const defaultProps = {
+  justified: false,
+  pullRight: false,
+  pullLeft: false,
+  stacked: false
 };
 
 class Nav extends React.Component {
@@ -139,14 +138,14 @@ class Nav extends React.Component {
   }
 
   getActiveProps() {
-    const tabContainer = this.context.$bs_tabContainer;
+    const tabContainer = this.props.$bs_tabContainer;
 
     if (tabContainer) {
       warning(
         this.props.activeKey == null && !this.props.activeHref,
         'Specifying a `<Nav>` `activeKey` or `activeHref` in the context of ' +
-          'a `<TabContainer>` is not supported. Instead use `<TabContainer ' +
-          `activeKey={${this.props.activeKey}} />\`.`
+        'a `<TabContainer>` is not supported. Instead use `<TabContainer ' +
+        `activeKey={${this.props.activeKey}} />\`.`
       );
 
       return tabContainer;
@@ -205,10 +204,10 @@ class Nav extends React.Component {
       warning(
         !id && !controls,
         'In the context of a `<TabContainer>`, `<NavItem>`s are given ' +
-          'generated `id` and `aria-controls` attributes for the sake of ' +
-          'proper component accessibility. Any provided ones will be ignored. ' +
-          'To control these attributes directly, provide a `generateChildId` ' +
-          'prop to the parent `<TabContainer>`.'
+        'generated `id` and `aria-controls` attributes for the sake of ' +
+        'proper component accessibility. Any provided ones will be ignored. ' +
+        'To control these attributes directly, provide a `generateChildId` ' +
+        'prop to the parent `<TabContainer>`.'
       );
 
       id = tabContainer.getTabId(eventKey);
@@ -282,10 +281,11 @@ class Nav extends React.Component {
       pullLeft,
       className,
       children,
+      $bs_tabContainer: tabContainer,
+      $bs_navbar,
       ...props
     } = this.props;
 
-    const tabContainer = this.context.$bs_tabContainer;
     const role = propsRole || (tabContainer ? 'tablist' : null);
 
     const { activeKey, activeHref } = this.getActiveProps();
@@ -300,12 +300,12 @@ class Nav extends React.Component {
       [prefix(bsProps, 'justified')]: justified
     };
 
-    const navbar = propsNavbar != null ? propsNavbar : this.context.$bs_navbar;
+    const navbar = propsNavbar != null ? propsNavbar : $bs_navbar;
     let pullLeftClassName;
     let pullRightClassName;
 
     if (navbar) {
-      const navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+      const navbarProps = $bs_navbar || { bsClass: 'navbar' };
 
       classes[prefix(navbarProps, 'nav')] = true;
 
@@ -355,6 +355,5 @@ class Nav extends React.Component {
 
 Nav.propTypes = propTypes;
 Nav.defaultProps = defaultProps;
-Nav.contextTypes = contextTypes;
 
-export default bsClass('nav', bsStyles(['tabs', 'pills'], Nav));
+export default withNavBarContext(withTabContainerContext(bsClass('nav', bsStyles(['tabs', 'pills'], Nav))));

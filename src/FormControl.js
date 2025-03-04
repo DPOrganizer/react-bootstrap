@@ -14,6 +14,7 @@ import {
   bsSizes
 } from './utils/bootstrapUtils';
 import { SIZE_MAP, Size } from './utils/StyleConfig';
+import { withFormGroupContext } from './utils/Contexts';
 
 const propTypes = {
   componentClass: elementType,
@@ -32,20 +33,18 @@ const propTypes = {
    * <FormControl inputRef={ref => { this.input = ref; }} />
    * ```
    */
-  inputRef: PropTypes.func
+  inputRef: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+
+  $bs_formGroup: PropTypes.object,
 };
 
 const defaultProps = {
   componentClass: 'input'
 };
 
-const contextTypes = {
-  $bs_formGroup: PropTypes.object
-};
-
 class FormControl extends React.Component {
   render() {
-    const formGroup = this.context.$bs_formGroup;
+    const formGroup = this.props.$bs_formGroup;
     const controlId = formGroup && formGroup.controlId;
 
     const {
@@ -55,6 +54,7 @@ class FormControl extends React.Component {
       inputRef,
       className,
       bsSize,
+      $bs_formGroup,
       ...props
     } = this.props;
 
@@ -92,12 +92,11 @@ class FormControl extends React.Component {
 
 FormControl.propTypes = propTypes;
 FormControl.defaultProps = defaultProps;
-FormControl.contextTypes = contextTypes;
 
 FormControl.Feedback = FormControlFeedback;
 FormControl.Static = FormControlStatic;
 
-export default bsClass(
+export default withFormGroupContext(bsClass(
   'form-control',
   bsSizes([Size.SMALL, Size.LARGE], FormControl)
-);
+));
