@@ -15,7 +15,10 @@ const propTypes = {
 class NavbarCollapse extends React.Component {
   render() {
     const { children, $bs_navbar: navbarProps, ...props } = this.props;
-    const bsClassName = prefix(navbarProps || { bsClass: 'navbar' }, 'collapse');
+    const bsClassName = prefix(
+      navbarProps || { bsClass: 'navbar' },
+      'collapse'
+    );
 
     return (
       <Collapse in={navbarProps.expanded} {...props}>

@@ -15,7 +15,9 @@ class PanelFooter extends React.Component {
     let { children, className } = this.props;
     let { bsClass: _bsClass } = this.props.$bs_panel || {};
 
-    const [bsProps, elementProps] = splitBsPropsAndOmit(this.props, ['$bs_panel']);
+    const [bsProps, elementProps] = splitBsPropsAndOmit(this.props, [
+      '$bs_panel'
+    ]);
     bsProps.bsClass = _bsClass || bsProps.bsClass;
 
     return (

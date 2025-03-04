@@ -46,7 +46,13 @@ class PanelToggle extends React.Component {
   }
 
   render() {
-    const { onClick, className, componentClass, $bs_panel, ...props } = this.props;
+    const {
+      onClick,
+      className,
+      componentClass,
+      $bs_panel,
+      ...props
+    } = this.props;
     const { expanded, bodyId } = $bs_panel || {};
     const Component = componentClass;
 

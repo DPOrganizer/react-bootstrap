@@ -120,7 +120,7 @@ const propTypes = {
   /**
    * @private
    */
-  container: BaseModal.propTypes.container,
+  container: BaseModal.propTypes.container
 };
 
 const defaultProps = {

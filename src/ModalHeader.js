@@ -60,7 +60,10 @@ class ModalHeader extends React.Component {
         {closeButton && (
           <CloseButton
             label={closeLabel}
-            onClick={createChainedFunction($bs_modal && $bs_modal.onHide, onHide)}
+            onClick={createChainedFunction(
+              $bs_modal && $bs_modal.onHide,
+              onHide
+            )}
           />
         )}
 

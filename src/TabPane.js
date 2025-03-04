@@ -226,10 +226,10 @@ class TabPane extends React.Component {
       warning(
         !elementProps.id && !elementProps['aria-labelledby'],
         'In the context of a `<TabContainer>`, `<TabPanes>` are given ' +
-        'generated `id` and `aria-labelledby` attributes for the sake of ' +
-        'proper component accessibility. Any provided ones will be ignored. ' +
-        'To control these attributes directly provide a `generateChildId` ' +
-        'prop to the parent `<TabContainer>`.'
+          'generated `id` and `aria-labelledby` attributes for the sake of ' +
+          'proper component accessibility. Any provided ones will be ignored. ' +
+          'To control these attributes directly provide a `generateChildId` ' +
+          'prop to the parent `<TabContainer>`.'
       );
 
       elementProps.id = tabContainer.getPaneId(eventKey);
@@ -278,7 +278,5 @@ class TabPane extends React.Component {
 TabPane.propTypes = propTypes;
 
 export default withTabContainerContext(
-  withTabContentContext(
-    bsClass('tab-pane', TabPane)
-  )
+  withTabContentContext(bsClass('tab-pane', TabPane))
 );

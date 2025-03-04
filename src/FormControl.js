@@ -35,7 +35,7 @@ const propTypes = {
    */
   inputRef: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 
-  $bs_formGroup: PropTypes.object,
+  $bs_formGroup: PropTypes.object
 };
 
 const defaultProps = {
@@ -96,7 +96,6 @@ FormControl.defaultProps = defaultProps;
 FormControl.Feedback = FormControlFeedback;
 FormControl.Static = FormControlStatic;
 
-export default withFormGroupContext(bsClass(
-  'form-control',
-  bsSizes([Size.SMALL, Size.LARGE], FormControl)
-));
+export default withFormGroupContext(
+  bsClass('form-control', bsSizes([Size.SMALL, Size.LARGE], FormControl))
+);

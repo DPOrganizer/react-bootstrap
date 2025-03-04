@@ -202,9 +202,14 @@ setBsClass('navbar', Navbar);
 const UncontrollableNavbar = uncontrollable(Navbar, { expanded: 'onToggle' });
 
 function createSimpleWrapper(tag, suffix, displayName) {
-  const Wrapper = (
-    { componentClass: Component, className, pullRight, pullLeft, $bs_navbar: navbarProps, ...props }
-  ) => (
+  const Wrapper = ({
+    componentClass: Component,
+    className,
+    pullRight,
+    pullLeft,
+    $bs_navbar: navbarProps,
+    ...props
+  }) => (
     <Component
       {...props}
       className={classNames(
@@ -241,9 +246,15 @@ UncontrollableNavbar.Header = NavbarHeader;
 UncontrollableNavbar.Toggle = NavbarToggle;
 UncontrollableNavbar.Collapse = NavbarCollapse;
 
-UncontrollableNavbar.Form = withNavBarContext(createSimpleWrapper('div', 'form', 'NavbarForm'));
-UncontrollableNavbar.Text = withNavBarContext(createSimpleWrapper('p', 'text', 'NavbarText'));
-UncontrollableNavbar.Link = withNavBarContext(createSimpleWrapper('a', 'link', 'NavbarLink'));
+UncontrollableNavbar.Form = withNavBarContext(
+  createSimpleWrapper('div', 'form', 'NavbarForm')
+);
+UncontrollableNavbar.Text = withNavBarContext(
+  createSimpleWrapper('p', 'text', 'NavbarText')
+);
+UncontrollableNavbar.Link = withNavBarContext(
+  createSimpleWrapper('a', 'link', 'NavbarLink')
+);
 
 // Set bsStyles here so they can be overridden.
 export default bsStyles([Style.DEFAULT, Style.INVERSE], Style.DEFAULT)(

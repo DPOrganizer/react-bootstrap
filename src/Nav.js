@@ -144,8 +144,8 @@ class Nav extends React.Component {
       warning(
         this.props.activeKey == null && !this.props.activeHref,
         'Specifying a `<Nav>` `activeKey` or `activeHref` in the context of ' +
-        'a `<TabContainer>` is not supported. Instead use `<TabContainer ' +
-        `activeKey={${this.props.activeKey}} />\`.`
+          'a `<TabContainer>` is not supported. Instead use `<TabContainer ' +
+          `activeKey={${this.props.activeKey}} />\`.`
       );
 
       return tabContainer;
@@ -204,10 +204,10 @@ class Nav extends React.Component {
       warning(
         !id && !controls,
         'In the context of a `<TabContainer>`, `<NavItem>`s are given ' +
-        'generated `id` and `aria-controls` attributes for the sake of ' +
-        'proper component accessibility. Any provided ones will be ignored. ' +
-        'To control these attributes directly, provide a `generateChildId` ' +
-        'prop to the parent `<TabContainer>`.'
+          'generated `id` and `aria-controls` attributes for the sake of ' +
+          'proper component accessibility. Any provided ones will be ignored. ' +
+          'To control these attributes directly, provide a `generateChildId` ' +
+          'prop to the parent `<TabContainer>`.'
       );
 
       id = tabContainer.getTabId(eventKey);
@@ -356,4 +356,6 @@ class Nav extends React.Component {
 Nav.propTypes = propTypes;
 Nav.defaultProps = defaultProps;
 
-export default withNavBarContext(withTabContainerContext(bsClass('nav', bsStyles(['tabs', 'pills'], Nav))));
+export default withNavBarContext(
+  withTabContainerContext(bsClass('nav', bsStyles(['tabs', 'pills'], Nav)))
+);

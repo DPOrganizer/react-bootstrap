@@ -25,7 +25,13 @@ class ControlLabel extends React.Component {
     const formGroup = this.props.$bs_formGroup;
     const controlId = formGroup && formGroup.controlId;
 
-    const { htmlFor = controlId, srOnly, className, $bs_formGroup, ...props } = this.props;
+    const {
+      htmlFor = controlId,
+      srOnly,
+      className,
+      $bs_formGroup,
+      ...props
+    } = this.props;
     const [bsProps, elementProps] = splitBsProps(props);
 
     warning(

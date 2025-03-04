@@ -43,7 +43,9 @@ class FormGroup extends React.Component {
     }
 
     return (
-      <FormGroupContext.Provider value={{ controlId: this.props.controlId, validationState }}>
+      <FormGroupContext.Provider
+        value={{ controlId: this.props.controlId, validationState }}
+      >
         <div {...elementProps} className={classNames(className, classes)}>
           {children}
         </div>

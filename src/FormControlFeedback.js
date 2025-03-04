@@ -69,4 +69,6 @@ class FormControlFeedback extends React.Component {
 FormControlFeedback.propTypes = propTypes;
 FormControlFeedback.defaultProps = defaultProps;
 
-export default withFormGroupContext(bsClass('form-control-feedback', FormControlFeedback));
+export default withFormGroupContext(
+  bsClass('form-control-feedback', FormControlFeedback)
+);

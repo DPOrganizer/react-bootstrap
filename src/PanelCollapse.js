@@ -43,7 +43,7 @@ class PanelCollapse extends React.Component {
   render() {
     const { children } = this.props;
     const { headingId, bodyId, bsClass: _bsClass, expanded } =
-    this.props.$bs_panel || {};
+      this.props.$bs_panel || {};
 
     const [bsProps, props] = splitBsPropsAndOmit(this.props, ['$bs_panel']);
 

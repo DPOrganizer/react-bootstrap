@@ -84,8 +84,8 @@ class Panel extends React.Component {
       warning(
         this.props.expanded == null,
         'Specifying `<Panel>` `expanded` in the context of an accordion ' +
-        '`<PanelGroup>` is not supported. Set `activeKey` on the ' +
-        '`<PanelGroup>` instead.'
+          '`<PanelGroup>` is not supported. Set `activeKey` on the ' +
+          '`<PanelGroup>` instead.'
       );
 
       return panelGroup.activeKey === this.props.eventKey;
@@ -126,17 +126,19 @@ class Panel extends React.Component {
 
 Panel.propTypes = propTypes;
 
-const UncontrolledPanel = withPanelGroupContext(uncontrollable(
-  bsClass(
-    'panel',
-    bsStyles(
-      [...Object.values(State), Style.DEFAULT, Style.PRIMARY],
-      Style.DEFAULT,
-      Panel
-    )
-  ),
-  { expanded: 'onToggle' }
-));
+const UncontrolledPanel = withPanelGroupContext(
+  uncontrollable(
+    bsClass(
+      'panel',
+      bsStyles(
+        [...Object.values(State), Style.DEFAULT, Style.PRIMARY],
+        Style.DEFAULT,
+        Panel
+      )
+    ),
+    { expanded: 'onToggle' }
+  )
+);
 
 Object.assign(UncontrolledPanel, {
   Heading,
