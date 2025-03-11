@@ -93,9 +93,12 @@ class FormControl extends React.Component {
 FormControl.propTypes = propTypes;
 FormControl.defaultProps = defaultProps;
 
-FormControl.Feedback = FormControlFeedback;
-FormControl.Static = FormControlStatic;
+const ContextAwareFormControl = withFormGroupContext(FormControl);
 
-export default withFormGroupContext(
-  bsClass('form-control', bsSizes([Size.SMALL, Size.LARGE], FormControl))
+ContextAwareFormControl.Feedback = FormControlFeedback;
+ContextAwareFormControl.Static = FormControlStatic;
+
+export default bsClass(
+  'form-control',
+  bsSizes([Size.SMALL, Size.LARGE], ContextAwareFormControl)
 );

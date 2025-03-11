@@ -13,3 +13,4 @@ dist/
 tmp-*-repo/
 .babel-cache/
 coverage/
+.idea/
