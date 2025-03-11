@@ -1,7 +1,7 @@
 import contains from 'dom-helpers/query/contains';
 import React, { cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import warning from 'warning';
 
 import Overlay from './Overlay';
@@ -113,6 +113,7 @@ class OverlayTrigger extends React.Component {
       this.handleMouseOverOut(this.handleDelayedHide, e, 'toElement');
 
     this._mountNode = null;
+    this._root = null;
 
     this.state = {
       show: props.defaultOverlayShown
@@ -121,6 +122,7 @@ class OverlayTrigger extends React.Component {
 
   componentDidMount() {
     this._mountNode = document.createElement('div');
+    this._root = ReactDOM.createRoot(this._mountNode);
     this.renderOverlay();
   }
 
@@ -129,7 +131,9 @@ class OverlayTrigger extends React.Component {
   }
 
   componentWillUnmount() {
-    ReactDOM.unmountComponentAtNode(this._mountNode);
+    if (this._root) {
+      this._root.unmount();
+    }
     this._mountNode = null;
 
     clearTimeout(this._hoverShowDelay);
@@ -233,11 +237,7 @@ class OverlayTrigger extends React.Component {
   }
 
   renderOverlay() {
-    ReactDOM.unstable_renderSubtreeIntoContainer(
-      this,
-      this._overlay,
-      this._mountNode
-    );
+    this._root.render(this._overlay);
   }
 
   render() {
