@@ -13,7 +13,7 @@
   "module": "es/index.js",
   "scripts": {
     "bootstrap": "yarn && yarn --cwd www",
-    "build": "node tools/build.js",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider node tools/build.js",
     "build-docs": "yarn --cwd www build",
     "deploy-docs": "yarn --cwd www deploy",
     "start": "yarn --cwd www run develop",
@@ -53,8 +53,8 @@
   "author": "Stephen J. Collings <stevoland@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react": ">=16.3.0",
-    "react-dom": ">=16.3.0"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -106,8 +106,8 @@
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "prettier": "^1.12.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "react": "^18",
+    "react-dom": "^18",
     "react-test-renderer": "^16.8.6",
     "release-script": "^1.0.2",
     "sinon": "^2.3.2",
@@ -124,11 +124,8 @@
     "prop-types-extra": "^1.0.1",
     "react-overlays": "^0.9.0",
     "react-prop-types": "^0.4.0",
-    "react-transition-group": "^2.0.0",
+    "react-transition-group": "^4",
     "uncontrollable": "^7.0.2",
     "warning": "^3.0.0"
-  },
-  "release-script": {
-    "bowerRepo": "git@github.com:react-bootstrap/react-bootstrap-bower.git"
   }
 }
