@@ -11,7 +11,7 @@ const propTypes = {
   onSelect: PropTypes.func,
   disabled: PropTypes.bool,
   active: PropTypes.bool,
-  activeLabel: PropTypes.string.isRequired
+  activeLabel: PropTypes.string
 };
 
 export default function PaginationItem({
