@@ -14,18 +14,12 @@ const propTypes = {
   activeLabel: PropTypes.string.isRequired
 };
 
-const defaultProps = {
-  active: false,
-  disabled: false,
-  activeLabel: '(current)'
-};
-
 export default function PaginationItem({
-  active,
-  disabled,
+  active = false,
+  disabled = false,
   className,
   style,
-  activeLabel,
+  activeLabel = '(current)',
   children,
   ...props
 }) {
@@ -41,7 +35,6 @@ export default function PaginationItem({
 }
 
 PaginationItem.propTypes = propTypes;
-PaginationItem.defaultProps = defaultProps;
 
 function createButton(name, defaultValue, label = name) {
   return class extends React.Component {
