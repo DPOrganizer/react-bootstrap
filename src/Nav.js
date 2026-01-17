@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import keycode from 'keycode';
 import React, { cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
 import all from 'prop-types-extra/lib/all';
 import warning from 'warning';
 
@@ -110,6 +109,11 @@ const defaultProps = {
 };
 
 class Nav extends React.Component {
+  constructor(props) {
+    super(props);
+    this.navRef = React.createRef(); // Create a ref
+  }
+
   componentDidUpdate() {
     if (!this._needsRefocus) {
       return;
@@ -127,7 +131,7 @@ class Nav extends React.Component {
     const childrenArray = ValidComponentChildren.toArray(children);
     const activeChildIndex = childrenArray.indexOf(activeChild);
 
-    const childNodes = ReactDOM.findDOMNode(this).children;
+    const childNodes = this.navRef.current?.children; // Use ref instead of findDOMNode
     const activeNode = childNodes && childNodes[activeChildIndex];
 
     if (!activeNode || !activeNode.firstChild) {
@@ -282,6 +286,7 @@ class Nav extends React.Component {
       className,
       children,
       $bs_tabContainer: tabContainer,
+      // eslint-disable-next-line camelcase
       $bs_navbar,
       ...props
     } = this.props;
@@ -300,11 +305,13 @@ class Nav extends React.Component {
       [prefix(bsProps, 'justified')]: justified
     };
 
+    // eslint-disable-next-line camelcase
     const navbar = propsNavbar != null ? propsNavbar : $bs_navbar;
     let pullLeftClassName;
     let pullRightClassName;
 
     if (navbar) {
+      // eslint-disable-next-line camelcase
       const navbarProps = $bs_navbar || { bsClass: 'navbar' };
 
       classes[prefix(navbarProps, 'nav')] = true;
@@ -324,6 +331,7 @@ class Nav extends React.Component {
         {...elementProps}
         role={role}
         className={classNames(className, classes)}
+        ref={this.navRef}
       >
         {ValidComponentChildren.map(children, child => {
           const active = this.isActive(child, activeKey, activeHref);

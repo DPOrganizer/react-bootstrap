@@ -1,6 +1,9 @@
 ## [Unreleased]
 
-- **chore:** Switch to new context API (React 18)
+- **chore:** React 18 support
+  - switch to new context API
+  - replace other legacy APIs like `unstable_renderSubtreeIntoContainer`
+  - replace deprecated `findDOMNode` with `useRef`
 
 ---
 

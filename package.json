@@ -1,6 +1,6 @@
 {
-  "name": "react-bootstrap",
-  "version": "0.33.1",
+  "name": "@dporganizer/react-bootstrap",
+  "version": "0.41.3",
   "description": "Bootstrap 3 components built with React",
   "repository": {
     "type": "git",

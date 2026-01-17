@@ -5,7 +5,6 @@ import canUseDOM from 'dom-helpers/util/inDOM';
 import getScrollbarSize from 'dom-helpers/util/scrollbarSize';
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
 import BaseModal from 'react-overlays/lib/Modal';
 import isOverflowing from 'react-overlays/lib/utils/isOverflowing';
 import elementType from 'prop-types-extra/lib/elementType';
@@ -150,6 +149,8 @@ class Modal extends React.Component {
     this.handleDialogClick = this.handleDialogClick.bind(this);
     this.setModalRef = this.setModalRef.bind(this);
 
+    this.containerRef = React.createRef(); // Create a ref for the container
+
     this.state = {
       style: {}
     };
@@ -198,7 +199,7 @@ class Modal extends React.Component {
 
     const document = ownerDocument(dialogNode);
     const bodyIsOverflowing = isOverflowing(
-      ReactDOM.findDOMNode(this.props.container || document.body)
+      this.containerRef.current || document.body // Use ref instead of findDOMNode
     );
     const modalIsOverflowing =
       dialogHeight > document.documentElement.clientHeight;
@@ -266,6 +267,7 @@ class Modal extends React.Component {
           onEntering={createChainedFunction(onEntering, this.handleEntering)}
           onExited={createChainedFunction(onExited, this.handleExited)}
           onMouseUp={this.handleMouseUp}
+          container={this.containerRef.current} // Pass the ref to the container
         >
           <Dialog
             {...dialogProps}
@@ -277,6 +279,7 @@ class Modal extends React.Component {
             {children}
           </Dialog>
         </BaseModal>
+        <div ref={this.containerRef} /> {/* Add the container ref */}
       </ModalContext.Provider>
     );
   }
